@@ -56,7 +56,7 @@ class Errand(Base):
         self.status_id = message.data.get('status').get('id', 1)
 
     def as_message(self):
-        from simargl.message import Message
+        from bouser_simargl.message import Message
         message = Message()
         message.topic = 'errand'
         message.sender = self.setPerson_id

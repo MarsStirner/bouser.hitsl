@@ -4,7 +4,7 @@ import datetime
 from twisted.internet.threads import deferToThread
 
 from bouser.helpers.plugin_helpers import Dependency
-from bouser.ext.simargl.client import SimarglClient
+from bouser_simargl.client import SimarglClient
 from .models import Errand, rbCounter
 
 
@@ -27,7 +27,7 @@ class Client(SimarglClient):
                 number = get_new_errand_number(session)
                 obj.from_message(message, number)
                 session.add(obj)
-            return obj.id
+                return obj.id
 
         def worker_envelope():
             result = []
