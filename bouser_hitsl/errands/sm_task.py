@@ -10,7 +10,7 @@ def errand_statuses(self):
     with self.db.context_session() as session:
         session.query(Errand).filter(
             Errand.deleted == 0,
-            rbErrandStatus.code == 'waiting',
+            rbErrandStatus.code == u'waiting',
             Errand.plannedExecDate < datetime.date.today(),
             Errand.status_id == rbErrandStatus.id,
         ).update({
