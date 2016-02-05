@@ -28,7 +28,13 @@ class ScheduleManager(Service, BouserPlugin):
         self.task_functions = {}
         self.schedules = {}
 
-        for mn in config.get('mixins', '').split(' '):
+        mixins = config.get('mixins', [])
+        if isinstance(mixins, basestring):
+            mixins = mixins.split(' ')
+        elif not isinstance(mixins, (list, tuple, dict)):
+            raise Exception('Mixins mus be either string or list/tuple. In worst case - dict')
+
+        for mn in mixins:
             if '.' not in mn:
                 continue
             module_name, func_name = mn.rsplit('.', 1)
