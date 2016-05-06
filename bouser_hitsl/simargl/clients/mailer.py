@@ -85,7 +85,10 @@ class Client(SimarglClient):
                 obj = UserMail()
                 obj.from_message(message)
                 session.add(obj)
-            return obj.id
+                return {
+                    'usermail_id': obj.id,
+                    'recipient_id': obj.recipient_id
+                }
 
         def worker_envelope():
             result = []
@@ -94,9 +97,24 @@ class Client(SimarglClient):
                     obj = UserMail()
                     obj.from_message(msg)
                     session.add(obj)
-                    result.append(obj)
+                    result.append({
+                        'usermail_id': obj.id,
+                        'recipient_id': obj.recipient_id
+                    })
+
+        def on_finish(new_mail_result):
+            if isinstance(new_mail_result, dict):
+                message = Message()
+                message.topic = 'mail:notify'
+                message.sender = None
+                message.recipient = new_mail_result['recipient_id']
+                message.data = {
+                    'subject': u'Новое письмо',
+                    'id': new_mail_result['usermail_id']
+                }
+                self.simargl.inject_message(message)
 
         if message.envelope:
-            deferToThread(worker_envelope)
+            deferToThread(worker_envelope).addCallback(on_finish)
         else:
-            deferToThread(worker_single)
+            deferToThread(worker_single).addCallback(on_finish)
