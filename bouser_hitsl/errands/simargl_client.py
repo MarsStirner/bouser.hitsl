@@ -5,7 +5,9 @@ from twisted.internet.threads import deferToThread
 
 from bouser.helpers.plugin_helpers import Dependency
 from bouser_simargl.client import SimarglClient
+from bouser.ext.simargl.message import Message
 from .models import Errand, rbCounter
+
 
 
 class Client(SimarglClient):
@@ -27,7 +29,10 @@ class Client(SimarglClient):
                 number = get_new_errand_number(session)
                 obj.from_message(message, number)
                 session.add(obj)
-                return obj.id
+                return {
+                    'user_errand_id': obj.id,
+                    'recipient_id': obj.execPerson_id
+                }
 
         def worker_envelope():
             result = []
@@ -36,12 +41,28 @@ class Client(SimarglClient):
                     obj = Errand()
                     obj.from_message(msg)
                     session.add(obj)
-                    result.append(obj)
+                    result.append({
+                        'user_errand_id': obj.id,
+                        'recipient_id': obj.execPerson_id
+                    })
+
+        def on_finish(new_mail_result):
+            if isinstance(new_mail_result, dict):
+                message = Message()
+                message.topic = 'errand:notify'
+                message.sender = None
+                message.recipient = new_mail_result['recipient_id']
+                message.data = {
+                    'subject': u'Новое поручение',
+                    'id': new_mail_result['user_errand_id']
+                }
+                return self.simargl.inject_message(message)
+
 
         if message.envelope:
-            deferToThread(worker_envelope)
+            deferToThread(worker_envelope).addCallback(on_finish)
         else:
-            deferToThread(worker_single)
+            deferToThread(worker_single).addCallback(on_finish)
 
 
 def get_new_errand_number(session):
