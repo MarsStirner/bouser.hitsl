@@ -28,6 +28,7 @@ class Errand(Base):
     result = Column(Text, nullable=False)
     readingDate = Column(DateTime)
     status_id = Column(ForeignKey('rbErrandStatus.id'), nullable=False)
+    communications = Column(Text)
 
     status = relationship('rbErrandStatus')
 
@@ -40,6 +41,7 @@ class Errand(Base):
             'set_person': self.setPerson,
             'exec_person': self.execPerson,
             'text': self.text,
+            'communications': self.communications,
             'planned_exec_date': self.plannedExecDate,
             'exec_date': self.execDate,
             'result': self.result,
@@ -50,6 +52,7 @@ class Errand(Base):
         self.setPerson_id = message.sender
         self.execPerson_id = message.recipient
         self.text = message.data.get('text', '')
+        self.communications = message.data.get('communications', '')
         self.number = number
         self.event_id = message.data.get('event_id', '')
         self.plannedExecDate = message.data.get('planned_exec_date', datetime.datetime.now())
@@ -63,7 +66,8 @@ class Errand(Base):
         message.recipient = self.execPerson_id
         message.tags = set()
         message.data = {
-            'text': self.text
+            'text': self.text,
+            'communications': self.communications
         }
         return message
 
