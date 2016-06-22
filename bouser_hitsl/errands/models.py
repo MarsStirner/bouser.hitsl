@@ -72,21 +72,6 @@ class Errand(Base):
         return message
 
 
-class rbCounter(Base):
-    __tablename__ = u'rbCounter'
-
-    id = Column(Integer, primary_key=True)
-    code = Column(String(8), nullable=False)
-    name = Column(String(64), nullable=False)
-    value = Column(Integer, nullable=False, server_default=u"'0'")
-    prefix = Column(String(32))
-    separator = Column(String(8), server_default=u"' '")
-    reset = Column(Integer, nullable=False, server_default=u"'0'")
-    startDate = Column(DateTime, nullable=False)
-    resetDate = Column(DateTime)
-    sequenceFlag = Column(Integer, nullable=False, server_default=u"'0'")
-
-
 class rbErrandStatus(Base):
     __tablename__ = u'rbErrandStatus'
     _table_description = u'статусы поручений'
