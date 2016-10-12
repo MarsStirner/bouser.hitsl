@@ -34,6 +34,9 @@ class LdapAuthObject(object):
     def __setstate__(self, state):
         self.user_id, self.login, self.groups = state
 
+    def get_description(self):
+        return self.login
+
 
 @implementer(IAuthenticator)
 class LdapAuthenticator(BouserPlugin):
