@@ -26,6 +26,8 @@ if __name__ == '__main__':
             "bouser_hitsl.simargl.clients",
             "bouser_hitsl.castiel",
             "bouser_hitsl.castiel.auth",
+            "bouser_hitsl.external_castiel",
+            "bouser_hitsl.external_castiel.auth",
         ],
         zip_safe=False,
         package_data={},
