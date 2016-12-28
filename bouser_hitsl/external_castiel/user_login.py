@@ -8,6 +8,7 @@ from twisted.internet import defer
 from twisted.web.resource import IResource, Resource
 from twisted.web.util import redirectTo
 from twisted.logger import Logger
+from twisted.python import log
 from zope.interface import implementer
 
 from bouser.helpers.plugin_helpers import BouserPlugin, Dependency
@@ -68,6 +69,7 @@ class ExternalCastielLoginResource(Resource, BouserPlugin):
                                 user_descr=ato.object.get_description(), dt=datetime.datetime.now(),
                                 tags=['AUTH', 'EXT_CAS'])
                 except EInvalidCredentials:
+                    log.msg('Error login: cannot find user {0}'.format(data['user'].encode('utf-8')))
                     logger.warn(u'Неудачная попытка аутентификации по логину {login} {dt:%d.%m.%Y %H:%M:%S} '
                                 u'(Не найден пользователь по логину)',
                                 login=data['user'], dt=datetime.datetime.now(), tags=['AUTH', 'EXT_CAS'])
